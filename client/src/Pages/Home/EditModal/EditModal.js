@@ -17,7 +17,7 @@ const EditModal = ({handelEdit, handleSubmit, handEditDataModalClose,EditDataMod
             </Form.Group>
 
             <Form.Group className="my-3 mx-3" controlId="formBasicEmail">
-                <Form.Control name='email' type="email" defaultValue={email} placeholder="Enter email" {...register("email", { required: "Email Address is required" })} />
+                <Form.Control readOnly name='email' type="email" defaultValue={email} placeholder="Enter email" {...register("email", { required: "Email Address is required" })} />
                 {errors.email && <p className='text-red-500'  role="alert">{errors.email?.message}</p>}
             </Form.Group>
 

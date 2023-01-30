@@ -93,34 +93,35 @@ async function run() {
             res.send(items)
         })
 
-        // app.get('/api/billing-list', async (req, res) =>{
-        //     const search = req.query.search
-        //     console.log(search);
-        //     if(ips.includes(req.ips)){
-        //         res.send({success: true, message: 'You already User'})
-        //     }else{
-        //         res.send({success: true})
-        //         ips.push(req.ips)
-        //     }
-        // })
 
-        // app.get('/api/billing-list/count', async (req, res) => {
-        //     const query = {};
-        //     const cursors = billingsCollection.find(query).sort({ date: -1 })
-        //     const items = await cursors.toArray()
-        //     const count = await billingsCollection.estimatedDocumentCount()
-        //     res.send({ count, items })
-        // })
-
-        app.patch('/api/update-billing/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) };
+        app.put('/api/update-billing/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const update = req.body;
+            const option = { upsert: true };
+            console.log(update);
             const updatedDoc = {
                 $set: {
-
+                    ...update
                 }
             }
+            const result = await billingsCollection.updateOne(query, updatedDoc, option)
+            res.send(result);
         })
+
+        // app.put('/packageUpdate/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const query = { _id: ObjectId(id) };
+        //     const details = req.body;
+        //     const option = { upsert: true };
+        //     const updateDoc = {
+        //         $set: {
+        //             description: details.description
+        //         }
+        //     }
+        //     const result = await packagesCollection.updateOne(query, updateDoc, option)
+        //     res.send(result);
+        // })
 
         app.delete('/api/delete-billing/:id', verifyJWT, async (req, res) => {
             const id = req.params.id;

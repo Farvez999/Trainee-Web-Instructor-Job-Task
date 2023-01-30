@@ -30,10 +30,6 @@ const Home = () => {
     };
 
 
-    // edit data
-    const handelEdit = data => {
-        console.log(data);
-    }
 
 
     const serachRef = useRef();
@@ -150,6 +146,44 @@ const Home = () => {
         }
 
     }
+
+    // edit data
+    const handelEdit = data => {
+        console.log(data);
+        const name = data.name;
+        const email = data.email;
+        const phone = data.phone;
+        const amount = data.amount;
+
+        console.log(name, email, phone, amount);
+
+
+
+        const update = {
+            name,
+            email,
+            phone,
+            amount
+        }
+
+        fetch(`http://localhost:5000/api/update-billing/${data.email}`, {
+            method: 'PUT',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(update)
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.modifiedCount > 0) {
+                    toast.success('Items is successful updated');
+                    // Navigate('/dashboard/myPackage');
+                    handleClose()
+                    refetch()
+                }
+            });
+    }
+
 
 
 
