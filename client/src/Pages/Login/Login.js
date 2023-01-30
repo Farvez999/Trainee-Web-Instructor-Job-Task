@@ -36,7 +36,7 @@ const Login = () => {
         const loginEmail = data.email;
         const loginPass = data.password;
 
-        fetch(`http://localhost:5000/api/login`, {
+        fetch(`https://server-teal-seven.vercel.app/api/login`, {
 
         })
             .then(res => res.json())

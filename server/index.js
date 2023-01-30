@@ -137,9 +137,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Marriage Media is Running')
+    res.send('Trainee-Web-Instructor-Job-Task is Running')
 })
 
 app.listen(port, () => {
-    console.log(`Marriage Media running on Server ${port}`);
+    console.log(`Trainee-Web-Instructor-Job-Task running on Server ${port}`);
 })

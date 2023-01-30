@@ -40,7 +40,7 @@ const Signup = () => {
             password: data.password
         }
 
-        fetch(`http://localhost:5000/api/registration`, {
+        fetch(`https://server-teal-seven.vercel.app/api/registration`, {
             method: 'POST',
             headers: {
 
@@ -97,7 +97,7 @@ const Signup = () => {
 
     // const saveUserDasboard = (name, email) => {
     //     const user = { name, email };
-    //     fetch('http://localhost:5000/users', {
+    //     fetch('https://server-teal-seven.vercel.app/users', {
     //         method: 'POST',
     //         headers: {
     //             'Content-Type': 'application/json'

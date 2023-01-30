@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'react-bootstrap';
 
 
-const TableBody = ({ item, i, HandelDelete, handleShowEdit }) => {
+const TableBody = ({ item, i, HandelDelete, handEditDataModal }) => {
 
 
 
@@ -31,9 +31,9 @@ const TableBody = ({ item, i, HandelDelete, handleShowEdit }) => {
             <td>
                 <Button variant="danger" className='me-3' onClick={() => HandelDelete(_id)} >Delete</Button>
                 {/* <Button variant="danger" className='me-3' onClick={() => HandelEdit(_id)} >Edit</Button> */}
-                <Button variant="primary" onClick={handleShowEdit}>
-                Editt
-                    </Button>
+                <Button variant="primary" onClick={() => handEditDataModal(item)}>
+                    Editt
+                </Button>
             </td>
         </tr>
     );

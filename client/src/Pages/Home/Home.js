@@ -6,29 +6,40 @@ import { toast } from 'react-hot-toast';
 import TableBody from './TableBody/TableBody';
 import TableHeads from './TableHeads/TableHeads';
 import { v1 as uuidv1 } from 'uuid';
+import EditModal from './EditModal/EditModal';
+import AddDataModal from './AddDataModal/AddDataModal';
 
 const Home = () => {
 
-    const [show, setShow] = useState(false);
+    const { register, formState: { errors }, handleSubmit } = useForm();
 
+    const [show, setShow] = useState(false);
+    const [EditDataModal, setEditDataModal] = useState(false)
+    const [item, setItem] = useState({})
+
+
+    // add modal functions
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const [showEdit, setShowEdit] = useState(false);
-
-    const handleCloseEdit = () => setShowEdit(false);
-    const handleShowEdit = () => {
-        setShowEdit(true)
-        console.log(showEdit);
+    // edit modal functions
+    const handEditDataModalClose = () => setEditDataModal(false);
+    const handEditDataModal = (items) => {
+        setEditDataModal(!EditDataModal)
+        setItem(items);
     };
+
+
+    // edit data
+    const handelEdit = data => {
+        console.log(data);
+    }
+
 
     const serachRef = useRef();
     const [search, setSearch] = useState('');
-    const [searchProfile, setsearchProfile] = useState([]);
 
-    const { register, formState: { errors }, handleSubmit } = useForm();
 
-    const [addItems, setAddItems] = useState(false)
     const [paidAmount, setPaidAmount] = useState(0)
     const [loader, setLoader] = useState(false)
 
@@ -53,7 +64,7 @@ const Home = () => {
             amount
         }
 
-        fetch('http://localhost:5000/api/add-billing', {
+        fetch('https://server-teal-seven.vercel.app/api/add-billing', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json'
@@ -82,7 +93,7 @@ const Home = () => {
     const { data: items = [], refetch, isLoading } = useQuery({
         queryKey: ['items'],
         queryFn: async () => {
-            const res = await fetch(`http://localhost:5000/api/billing-list?search=${search}`)
+            const res = await fetch(`https://server-teal-seven.vercel.app/api/billing-list?search=${search}`)
             const data = await res.json();
             return data;
         }
@@ -97,7 +108,7 @@ const Home = () => {
     };
 
     // useEffect(() => {
-    //     fetch(`http://localhost:5000/api/billing-list`)
+    //     fetch(`https://server-teal-seven.vercel.app/api/billing-list`)
     //         .then(res => res.json())
     //         .then(data => console.log(data))
     // })
@@ -122,7 +133,7 @@ const Home = () => {
         if (window.confirm('Are you sure you want to delete') === true) {
             setLoader(true)
 
-            fetch(`http://localhost:5000/api/delete-billing/${id}`, {
+            fetch(`https://server-teal-seven.vercel.app/api/delete-billing/${id}`, {
                 method: "DELETE",
                 headers: {
                     authorization: `bearer ${localStorage.getItem("accessToken")}`,
@@ -136,28 +147,6 @@ const Home = () => {
                     }
                 });
 
-            // fetch(`http://localhost:5000/api/delete-billing/${id}`, {
-
-            //     method: 'DELETE',
-            //     headers: {
-            //         authorization: `bearer ${localStorage.getItem("accessToken")}`,
-            //     },
-
-            // })
-            //     .then(res => res.json())
-            //     .then(data => {
-
-            //         if (data.deletedCount > 0) {
-            //             toast.success('Item deleted successfully.');
-            //             setLoader(false);
-            //             refetch();
-            //         }
-            //     })
-            //     .catch(err => {
-            //         toast.error(err.message);
-            //         setLoader(false);
-            //         console.log(err.message);
-            //     });
         }
 
     }
@@ -170,7 +159,6 @@ const Home = () => {
     if (isLoading) {
         return (<h1 className='text-5xl text-red text-center'>Loading...</h1>)
     }
-    // items.filter(item => item.totalCost)
 
     return (
         <div className='mt-5' style={{ height: '120vh', width: '100%' }}>
@@ -179,39 +167,17 @@ const Home = () => {
             <div className="mx-auto" style={{ width: '80%' }}>
 
 
-                <Modal showEdit={showEdit} onHide={handleCloseEdit}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Modal heading</Modal.Title>
-                    </Modal.Header>
-                    <Form onSubmit={handleSubmit(handleAddBilling)}>
-                        <Form.Group className="my-3 mx-3">
-                            <Form.Control name='name' type="text" placeholder="Full Name" {...register("name", { required: "Name is required" })} />
-                        </Form.Group>
+                <EditModal
+                    handEditDataModal={handEditDataModal}
+                    EditDataModal={EditDataModal}
+                    handEditDataModalClose={handEditDataModalClose}
+                    register={register}
+                    errors={errors}
+                    item={item}
+                    handleSubmit={handleSubmit}
+                    handelEdit={handelEdit}
 
-                        <Form.Group className="my-3 mx-3" controlId="formBasicEmail">
-                            <Form.Control name='email' type="email" placeholder="Enter email" {...register("email", { required: "Email Address is required" })} />
-                            {errors.email && <p className='text-red-500' role="alert">{errors.email?.message}</p>}
-                        </Form.Group>
-
-                        <Form.Group className="my-3 mx-3">
-                            <Form.Control name='phone' type="phone" placeholder="Phone Number" {...register("phone", { required: "Phone Numer is required", minLength: { value: 11, message: "At last provide 11 characters" }, maxLength: { value: 11, message: "At last provide 11 characters" } })} />
-                            {errors.phone && <p className='text-danger' role="alert">{errors.phone?.message}</p>}
-                        </Form.Group>
-
-                        <Form.Group className="my-3 mx-3">
-                            <Form.Control name='amount' type="text" placeholder="Payable Amount" {...register("amount", { required: "Payable Amount is required" })} />
-                        </Form.Group>
-
-                        <Modal.Footer>
-                            <Button variant="secondary" onClick={handleClose}>
-                                Close
-                            </Button>
-                            <Button variant="primary" type="submit">
-                                Save Changes
-                            </Button>
-                        </Modal.Footer>
-                    </Form>
-                </Modal>
+                />
 
 
                 <div className="d-flex justify-content-between mb-3">
@@ -227,46 +193,18 @@ const Home = () => {
                         Add New Bill
                     </Button>
 
-                    <Modal show={show} onHide={handleClose}>
-                        <Modal.Header closeButton>
-                            <Modal.Title>Add your Billing</Modal.Title>
-                        </Modal.Header>
-                        <Form onSubmit={handleSubmit(handleAddBilling)}>
-                            <Form.Group className="my-3 mx-3">
-                                <Form.Control name='name' type="text" placeholder="Full Name" {...register("name", { required: "Name is required" })} />
-                            </Form.Group>
+                    <AddDataModal handleClose={handleClose}
+                        show={show}
+                        handleSubmit={handleSubmit}
+                        handleAddBilling={handleAddBilling}
+                        errors={errors}
+                        register={register} />
 
-                            <Form.Group className="my-3 mx-3" controlId="formBasicEmail">
-                                <Form.Control name='email' type="email" placeholder="Enter email" {...register("email", { required: "Email Address is required" })} />
-                                {errors.email && <p className='text-red-500' role="alert">{errors.email?.message}</p>}
-                            </Form.Group>
-
-                            <Form.Group className="my-3 mx-3">
-                                <Form.Control name='phone' type="phone" placeholder="Phone Number" {...register("phone", { required: "Phone Numer is required", minLength: { value: 11, message: "At last provide 11 characters" }, maxLength: { value: 11, message: "At last provide 11 characters" } })} />
-                                {errors.phone && <p className='text-danger' role="alert">{errors.phone?.message}</p>}
-                            </Form.Group>
-
-                            <Form.Group className="my-3 mx-3">
-                                <Form.Control name='amount' type="text" placeholder="Payable Amount" {...register("amount", { required: "Payable Amount is required" })} />
-                            </Form.Group>
-
-                            <Modal.Footer>
-                                <Button variant="secondary" onClick={handleClose}>
-                                    Close
-                                </Button>
-                                <Button variant="primary" type="submit">
-                                    Save Changes
-                                </Button>
-                            </Modal.Footer>
-                        </Form>
-                    </Modal>
                 </div>
 
                 <form onSubmit={handleSubmit}>
                     <Table striped bordered hover>
-                        {
-                            // Table Header
-                        }
+
                         <TableHeads />
                         <tbody>
                             {
@@ -274,26 +212,15 @@ const Home = () => {
 
                                 items.map((item, i) => <TableBody item={item}
                                     HandelDelete={HandelDelete}
-                                    handleShowEdit={handleShowEdit}
+                                    handEditDataModal={handEditDataModal}
                                     items={items}
                                     i={i} key={i} />)
                             },
 
 
-                            {/* {
-                           
-                            addItems && <AddItemsField  setAddItems={setAddItems} items={items}/>
-                        } */}
 
                         </tbody>
                     </Table>
-                    <div className="d-flex justify-content-end mb-3">
-
-                        {
-                            addItems &&
-                            <Button variant="primary" className='me-3' type='submit'>Save</Button>
-                        }
-                    </div>
                 </form>
 
 
